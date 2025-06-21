@@ -8,42 +8,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 現在の実装状況
 
-プロジェクトは初期実装が完了し、基盤構築段階から Nintendo API連携フェーズに移行中。
+**Phase 2完了 - 主要機能実装済み**: コアサービス機能がすべて実装されています。
 
 **実装済み:**
-- Next.js 14 (App Router) + TypeScript + Tailwind CSS
-- Supabase認証システム (Magic Link)
-- 基本的なページ構造とルーティング
-- データベーススキーマ設計
-- 認証ミドルウェアとRLS設定
+- ✅ Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- ✅ Supabase認証システム (Magic Link) 
+- ✅ Nintendo SplatNet 3 API統合 (s3si.ts使用)
+- ✅ OpenAI GPT-4o AIコーチング機能
+- ✅ バトルデータ分析・統計計算エンジン
+- ✅ ダッシュボード・バトル一覧・個別分析ページ
+- ✅ データベーススキーマ設計とRLS設定
+- ✅ セッショントークン暗号化保存
 
 ## アーキテクチャ概要
 
 ### 技術スタック（実装版）
-- **フロントエンド**: Next.js 14 (App Router)、TypeScript、Tailwind CSS、Noto Sans JP
+- **フロントエンド**: Next.js 14 (App Router)、TypeScript、Tailwind CSS
 - **認証**: Supabase Auth (Magic Link)
-- **データベース**: Supabase PostgreSQL (無料枠)
-- **サーバーレス関数**: Supabase Edge Functions
-- **ホスティング**: Vercel Hobby ($0/月)
-- **AI**: OpenAI GPT-3.5-turbo (予定)
-- **データソース**: Nintendo SplatNet 3 API (nxapi経由)
+- **データベース**: Supabase PostgreSQL
+- **AI**: OpenAI GPT-4o
+- **Nintendo API**: s3si.ts (Deno) - nxapiの代替手法
+- **ホスティング**: Vercel
 
 ### ディレクトリ構造
 ```
 spla3-ika-coach/
 ├── src/
-│   ├── app/              # Next.js App Router
-│   │   ├── auth/         # 認証関連ページ
-│   │   ├── dashboard/    # ダッシュボード
-│   │   └── api/          # API Routes
-│   ├── lib/              # ユーティリティ
-│   │   └── supabase/     # Supabase関連
-│   ├── types/            # TypeScript型定義
-│   └── middleware.ts     # 認証ミドルウェア
+│   ├── app/                    # Next.js App Router
+│   │   ├── api/
+│   │   │   ├── auth/          # 認証API
+│   │   │   ├── battles/       # バトルデータ取得
+│   │   │   └── coaching/      # AIコーチング
+│   │   ├── auth/              # 認証ページ
+│   │   ├── battles/           # バトル一覧・詳細
+│   │   ├── dashboard/         # ダッシュボード
+│   │   └── settings/          # Nintendo設定
+│   ├── components/            # Reactコンポーネント
+│   ├── lib/                   # ユーティリティ
+│   │   ├── supabase/         # Supabase関連
+│   │   └── stats.ts          # 統計計算
+│   ├── types/                # TypeScript型定義
+│   └── middleware.ts         # 認証ミドルウェア
 ├── supabase/
-│   ├── migrations/       # データベーススキーマ
-│   └── functions/        # Edge Functions
-└── docs/                 # プロジェクトドキュメント
+│   └── migrations/           # データベーススキーマ
+└── docs/                     # プロジェクトドキュメント
 ```
 
 ## 開発コマンド
@@ -74,12 +82,13 @@ npm run db:reset          # データベースリセット
 3. 認証ミドルウェアによる保護されたルート (`/dashboard`, `/battles`, `/analysis`)
 4. Row Level Security (RLS) による データアクセス制御
 
-### データフロー（計画）
-1. ユーザーがNintendoセッショントークンを提供
-2. Supabase Edge FunctionがnxapiでNintendo APIから50試合取得
+### データフロー（実装済み）
+1. ユーザーがNintendoセッショントークンを設定
+2. s3si.ts (Deno)でNintendo SplatNet 3から最新50試合取得
 3. バトルデータをJSONB形式でSupabase PostgreSQLに保存
-4. 統計計算とGPT分析実行
-5. 日本語コーチングアドバイス表示
+4. 統計計算エンジンで勝率・K/D・塗りポイントなど分析
+5. OpenAI GPT-4oで日本語コーチングアドバイス生成
+6. ダッシュボード・個別分析ページで結果表示
 
 ### Supabase設定
 - **クライアント**: `src/lib/supabase/client.ts` (ブラウザ用)
@@ -89,11 +98,17 @@ npm run db:reset          # データベースリセット
 
 ### 環境変数（必須）
 ```env
+# Supabase設定
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_KEY=your_supabase_service_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_key
+
+# OpenAI設定（AIコーチング機能用）
 OPENAI_API_KEY=your_openai_api_key
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# レート制限（オプション）
+UPSTASH_REDIS_REST_URL=your_upstash_redis_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 ```
 
 ## セキュリティ要件
@@ -106,7 +121,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## 実装時の重要事項
 
-1. **言語**: すべてのユーザー向けコンテンツは日本語
+1. **言語**: すべてのユーザー向けコンテンツとClaude Codeとの会話は日本語で行う
 2. **Nintendo API**: 非公式利用のリスク表示必須
 3. **コスト最適化**: GPT-3.5-turbo + キャッシング戦略
 4. **Vercel制限**: Hobby版は商用利用不可（本番時Pro移行）
@@ -132,6 +147,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - Supabase Edge Functionsは月500,000実行まで無料
 - GPT API使用量の監視とキャッシング実装必須
 - Nintendo APIの非公式利用リスクをユーザーに明示
+- **Claude Code制限**: `npm run dev`などの長時間実行コマンドは実行しない（ターミナルで直接実行）
 
 ## Git規約
 

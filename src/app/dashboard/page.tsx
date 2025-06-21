@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import StatsOverview from '@/components/StatsOverview'
+import CoachingAdviceButton from '@/components/CoachingAdviceButton'
 import { calculateUserStats } from '@/lib/stats'
 
 export default async function DashboardPage() {
@@ -59,19 +60,27 @@ export default async function DashboardPage() {
             >
               バトル一覧
             </Link>
-            {!tokenData && (
-              <Link
-                href="/settings/nintendo"
-                className="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 transition-colors"
-              >
-                Nintendo連携
-              </Link>
-            )}
+            <Link
+              href="/settings/nintendo"
+              className="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 transition-colors"
+            >
+              {tokenData ? 'Nintendo設定' : 'Nintendo連携'}
+            </Link>
           </div>
         </div>
 
         {/* 統計表示 */}
         <StatsOverview stats={stats} />
+
+        {/* AIコーチング機能 */}
+        {stats.totalBattles > 0 && (
+          <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              🧠 AIコーチング分析
+            </h3>
+            <CoachingAdviceButton />
+          </div>
+        )}
 
         {/* 初回セットアップガイド */}
         {!tokenData && (

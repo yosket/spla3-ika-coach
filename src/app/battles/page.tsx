@@ -126,9 +126,9 @@ export default async function BattlesPage() {
                     </p>
                   </div>
                   <div className="flex items-center">
-                    <button className="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                    <Link href={`/battles/${battle.id}`} className="text-purple-600 hover:text-purple-800 text-sm font-medium">
                       詳細分析 →
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
