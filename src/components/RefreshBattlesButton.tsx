@@ -13,11 +13,25 @@ export default function RefreshBattlesButton({ hasToken }: RefreshBattlesButtonP
     setLoading(true)
     
     try {
-      // TODO: バトルデータ取得API呼び出しを実装
-      await new Promise(resolve => setTimeout(resolve, 1000)) // 仮の遅延
-      alert('バトルデータ取得機能は開発中です')
+      const response = await fetch('/api/battles/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'データ取得に失敗しました')
+      }
+
+      alert(data.message)
+      
+      // ページを再読み込みして新しいデータを表示
+      window.location.reload()
     } catch (error) {
-      alert('エラーが発生しました')
+      alert(error instanceof Error ? error.message : 'エラーが発生しました')
     } finally {
       setLoading(false)
     }

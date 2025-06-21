@@ -81,7 +81,7 @@ export default async function BattlesPage() {
                   </span>
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-4 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">モード</p>
                     <p className="font-medium">{(battle.battle_data as any)?.mode || '不明'}</p>
@@ -89,6 +89,10 @@ export default async function BattlesPage() {
                   <div>
                     <p className="text-sm text-gray-600">ステージ</p>
                     <p className="font-medium">{(battle.battle_data as any)?.stage || '不明'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">ブキ</p>
+                    <p className="font-medium">{(battle.battle_data as any)?.weapon || '不明'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">結果</p>
@@ -101,11 +105,30 @@ export default async function BattlesPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">K/D</p>
+                    <p className="text-sm text-gray-600">K/D/A</p>
                     <p className="font-medium">
                       {(battle.battle_data as any)?.kills || 0}/
-                      {(battle.battle_data as any)?.deaths || 0}
+                      {(battle.battle_data as any)?.deaths || 0}/
+                      {(battle.battle_data as any)?.assists || 0}
                     </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">塗りポイント</p>
+                    <p className="font-medium">{(battle.battle_data as any)?.paint_point || 0}p</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">K/D比</p>
+                    <p className="font-medium">
+                      {((battle.battle_data as any)?.deaths > 0 
+                        ? ((battle.battle_data as any)?.kills / (battle.battle_data as any)?.deaths).toFixed(2)
+                        : (battle.battle_data as any)?.kills || 0
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex items-center">
+                    <button className="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                      詳細分析 →
+                    </button>
                   </div>
                 </div>
               </div>
