@@ -60,10 +60,10 @@ npm run lint              # ESLint実行
 ### データベース操作
 ```bash
 # Supabaseプロジェクトセットアップ後に実行
-supabase init             # ローカルSupabase初期化
-supabase start            # ローカルSupabase起動
-supabase db reset         # データベースリセット
-supabase db push          # マイグレーション適用
+npm run supabase login    # Supabaseにログイン
+npm run supabase init     # ローカルSupabase初期化
+npm run db:push           # マイグレーション適用
+npm run db:reset          # データベースリセット
 ```
 
 ## 重要な実装詳細
