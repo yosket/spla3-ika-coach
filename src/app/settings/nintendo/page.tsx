@@ -98,10 +98,14 @@ export default function NintendoSettingsPage() {
                 <strong>2.</strong> スプラトゥーン3のSplatNet 3にアクセス
               </li>
               <li>
-                <strong>3.</strong> ブラウザの開発者ツールでセッショントークンを取得
+                <strong>3.</strong> nxapiツールでセッショントークンを取得
                 <br />
                 <span className="text-sm text-gray-600">
-                  詳細な手順は<a href="#" className="text-purple-600 underline">こちらのガイド</a>をご確認ください
+                  詳細な手順は
+                  <Link href="/settings/nintendo/guide" className="text-purple-600 underline">
+                    こちらの詳細ガイド
+                  </Link>
+                  をご確認ください
                 </span>
               </li>
             </ol>

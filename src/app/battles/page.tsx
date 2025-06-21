@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import RefreshBattlesButton from '@/components/RefreshBattlesButton'
 
 export default async function BattlesPage() {
   const supabase = await createClient()
@@ -49,18 +50,7 @@ export default async function BattlesPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800">バトル履歴</h2>
-          
-          {tokenData && (
-            <button
-              className="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 transition-colors"
-              onClick={() => {
-                // TODO: バトルデータ取得機能を実装
-                alert('バトルデータ取得機能は開発中です')
-              }}
-            >
-              最新データを取得
-            </button>
-          )}
+          <RefreshBattlesButton hasToken={!!tokenData} />
         </div>
 
         {!tokenData ? (
